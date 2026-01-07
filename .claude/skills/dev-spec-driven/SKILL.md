@@ -13,10 +13,30 @@ Mỗi feature cần 3 files trong `.claude/specs/[feature-name]/`:
 2. `design.md` - Technical design + **Correctness Properties**
 3. `tasks.md` - Implementation plan + **PBT tasks**
 
-## Workflow
+## Workflow với User Confirmation
+
 ```
-Ý tưởng → Requirements → Design (+ Properties) → Tasks (+ PBT) → Code → Validate
+Ý tưởng
+    ↓
+Requirements ──→ [User Review] ──→ Approve?
+    ↓                                 ↓ No: Sửa đổi
+    ↓ Yes                             ↓
+Design ────────→ [User Review] ──→ Approve?
+    ↓                                 ↓ No: Sửa đổi
+    ↓ Yes                             ↓
+Tasks ─────────→ [User Review] ──→ Approve?
+    ↓                                 ↓ No: Sửa đổi
+    ↓ Yes                             ↓
+Implementation ──→ Code ──→ Validate
 ```
+
+### Confirmation Checkpoints
+
+| Sau khi tạo | Hỏi user |
+|-------------|----------|
+| `requirements.md` | Tiếp tục design? / Sửa đổi? / Dừng? |
+| `design.md` | Tiếp tục tasks? / Sửa đổi? / Dừng? |
+| `tasks.md` | Bắt đầu implement? / Sửa đổi? / Dừng? |
 
 ## Cấu trúc thư mục
 ```
@@ -159,3 +179,28 @@ US-001 (User Story)
 4. Tasks PHẢI có PBT tasks (optional nhưng recommended)
 5. Mọi task PHẢI reference AC-xxx
 6. Mọi property PHẢI reference AC-xxx
+
+## Quy tắc User Confirmation (QUAN TRỌNG)
+
+### Nguyên tắc chính
+- **KHÔNG BAO GIỜ** tự động tạo file tiếp theo mà không hỏi user
+- **LUÔN LUÔN** đợi user xác nhận trước khi tiếp tục
+- **LUÔN LUÔN** cho user option sửa đổi
+
+### Sau mỗi file, PHẢI hỏi:
+```
+❓ Bạn muốn:
+1. ✅ Tiếp tục bước tiếp theo
+2. ✏️ Có yêu cầu sửa đổi
+3. ⏸️ Dừng lại, sẽ tiếp tục sau
+```
+
+### Flow xử lý response:
+- User chọn **Tiếp tục** → Gọi agent tiếp theo
+- User chọn **Sửa đổi** → Apply changes → Hỏi lại
+- User chọn **Dừng** → Kết thúc, lưu state hiện tại
+
+### Agent Chain:
+```
+write-spec → [confirm] → write-design → [confirm] → plan-tasks → [confirm] → task-executor
+```

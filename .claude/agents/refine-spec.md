@@ -1,9 +1,9 @@
 ---
-name: spec-refiner
+name: refine-spec
 description: Cập nhật và refine specs đã có. Dùng khi cần thêm requirements, sửa design, update tasks, sync specs với code hiện tại.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
-skills: spec-driven-dev
+skills: dev-spec-driven
 ---
 
 # Spec Refiner Agent

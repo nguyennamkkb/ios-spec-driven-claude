@@ -82,24 +82,27 @@ final class [Name]PropertyTests: XCTestCase {
 
 **Khi hoàn thành TẤT CẢ tasks trong 1 Phase, BẮT BUỘC thực hiện:**
 
-### 1. Build với XcodeBuildMCP
-```
-Tool: xcode_list_schemes
-→ Lấy scheme name
+### 1. Build với mcp-xcode (skill)
+Dùng skill `mcp-xcode` để build và kiểm tra lỗi:
 
-Tool: xcode_build
-Parameters:
-- scheme: [scheme name]
-- configuration: Debug
-→ Check errors/warnings
+```
+Bước 1: List schemes
+→ xcode_list_schemes
+
+Bước 2: Build project
+→ xcode_build(scheme: [name], configuration: Debug)
+
+Bước 3: Nếu có test tasks trong phase
+→ xcode_test(scheme: [name])
 ```
 
 ### 2. Fix Errors (nếu có)
-- Đọc error messages
-- Fix theo skill `xcode-debug`
-- Build lại cho đến khi pass
+- Đọc error messages từ build output
+- Dùng skill `ios-debug` để fix
+- Build lại với `mcp-xcode` cho đến khi pass
+- **KHÔNG chuyển phase nếu còn errors**
 
-### 3. Commit Changes
+### 3. Commit Changes (sau khi build pass)
 ```bash
 git add .
 git commit -m "feat([feature-name]): Complete Phase X - [Phase name]
@@ -111,17 +114,29 @@ Tasks completed:
 Refs: US-XXX, AC-XXX.X"
 ```
 
-### 4. Report
+### 4. HỎI USER XÁC NHẬN (BẮT BUỘC)
+
 ```
 ✅ Phase [X] Complete: [Phase Name]
 
-Build Status: ✅ Success | ❌ Failed
-Tasks Completed: X/Y
-Commit: [hash]
+📊 Build Status: ✅ Success (via mcp-xcode)
+🧪 Test Status: ✅ X/Y passed (nếu có tests)
+📝 Tasks Completed: X/Y
+🔗 Commit: [hash]
 
-Next Phase: [Y] - [Phase Name]
-Continue? (yes/no)
+📋 Next Phase: [Y] - [Phase Name]
+   Tasks:
+   - Y.1 [description]
+   - Y.2 [description]
+
+❓ Bạn muốn:
+1. ✅ Tiếp tục Phase tiếp theo
+2. 🔍 Review code đã implement
+3. ✏️ Có yêu cầu sửa đổi
+4. ⏸️ Dừng lại, sẽ tiếp tục sau
 ```
+
+**KHÔNG được tự động chuyển phase mà không có confirmation từ user!**
 
 ---
 
@@ -154,9 +169,21 @@ func testUserRoundTripProperty() {
 - PHẢI đọc design.md trước khi code
 - PHẢI update tasks.md sau khi done
 
-### MCP Usage
-- LUÔN dùng XcodeBuildMCP thay vì bash xcodebuild
-- Dùng Figma MCP khi có Figma link cho UI tasks
+### Phase Completion (QUAN TRỌNG)
+- SAU KHI hoàn thành tất cả tasks trong phase:
+  1. PHẢI build với `mcp-xcode` skill
+  2. PHẢI fix errors nếu có (dùng `ios-debug` skill)
+  3. PHẢI build lại cho đến khi pass
+  4. PHẢI commit changes
+  5. PHẢI hỏi user xác nhận trước khi chuyển phase
+- **KHÔNG BAO GIỜ** tự động chuyển phase mà không hỏi user
+
+### Skill Usage
+- `mcp-xcode`: Build, test, check errors
+- `ios-debug`: Fix compile/runtime errors
+- `mcp-figma`: Lấy design specs cho UI tasks
+- `ios-architecture`: Cấu trúc folder/file
+- `ios-components`: Tạo reusable UI components
 
 ### PBT Specific
 - PHẢI copy Property statement vào test comment
